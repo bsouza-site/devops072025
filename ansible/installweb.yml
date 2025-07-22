@@ -1,0 +1,42 @@
+---
+- hosts: web
+  become: yes
+  vars_files:
+    - vars/default.yml
+  gather_facts: true
+  tasks:
+    - name: 'Instalação de pacotes webserver'
+      become: yes
+      apt:
+        pkg:
+          - php7.4
+          - php-pear
+          - php7.4-curl
+          - php7.4-gd
+          - php7.4-intl
+          - php7.4-xmlrpc
+          - php7.4-mysql
+          - apache2
+          - python3-mysqldb
+          - wget
+          - zip
+          - curl
+          - vim
+        state: present
+      when: ansible_os_family == 'Debian'
+    - name: 'Diretorio do webserver'
+      file:
+        path: /srv/www
+        state: directory
+        owner: "{{ app_user }}"
+        mode: '0775'
+    - name: 'Download e extração do arquivo da aplicação'
+      unarchive:
+        src: https://github.com/rogerramossilva/devops/raw/master/express.zip
+        dest: /srv/www
+        remote_src: yes
+    - name: 'Substitui IP de conexão com o banco'
+      replace:
+        path: /srv/www/express/backup.php
+        regexp: '192\.168\.1\.20'
+        replace: '172.17.177.102'
