@@ -20,5 +20,9 @@ Vagrant.configure("2") do |config|
         al.playbook = "playbook.yml"
         al.install_mode = "pip"
     end
+    controle.vm.provision "ansible_local" do |al|
+        al.playbook = "installdocker.yml"
+        al.install_mode = "pip"
+    end
   end
 end
